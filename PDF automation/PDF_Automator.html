@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Hub - Unified Projects View</title>
+    <meta name="description" content="A unified interface for multiple projects inspired by Odoo" />
+    <meta name="author" content="Project Hub" />
+
+    <meta property="og:title" content="Project Hub - Unified Projects View" />
+    <meta property="og:description" content="A unified interface for multiple projects inspired by Odoo" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@lovable_dev" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <style>
+        :root {
+            --color-bg-light: #f6f9fc;
+            --color-bg-dark: #0d1117;
+            --color-text-light: #333;
+            --color-text-dark: #f0f0f0;
+            --color-primary: #4a148c;
+            --header-height: 70px;
+        }
+
+        [data-theme="dark"] {
+            --color-bg-light: #0d1117;
+            --color-text-light: #f0f0f0;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, sans-serif;
+            background: var(--color-bg-light);
+            color: var(--color-text-light);
+            transition: all 0.3s ease;
+        }
+
+        /* HEADER */
+        header {
+            height: var(--header-height);
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 60px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            display: block;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #4a148c;
+            line-height: 1;
+        }
+
+
+        .logo-img {
+            height: 50px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        .toggle-theme {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(145deg, #e0e0e0, #ffffff);
+            border: none;
+            border-radius: 12px;
+            padding: 8px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+            color: var(--color-primary);
+            transition: all 0.3s ease;
+        }
+
+        .toggle-theme:hover {
+            background: #4a148c;
+            color: #fff;
+        }
+
+        .toggle-theme svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        main {
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+            color: #4a148c;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .project-card {
+            background-color: white;
+            padding: 1.5rem 1rem;
+            border-radius: 1rem;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            background-color: #673ab7;
+        }
+
+        .icon-circle svg {
+            width: 28px;
+            height: 28px;
+            stroke: white;
+        }
+
+        .project-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4a148c;
+        }
+
+        a.card-link {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Updated HEADER Section -->
+    <header>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="https://thegoodhealth.co.in" target="_blank"
+                style="display: flex; align-items: center; text-decoration: none;">
+                <img src="thegoodhealth.png" alt="Logo" class="logo-img" />
+                </a>
+        </div>
+        <button class="toggle-theme" onclick="toggleTheme()">
+            <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path id="theme-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.7.7M21 12h-1M4 12H3m2.34-6.66l-.7-.7M19.95 19.95l-.7-.7M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+        
+        </button>
+    </header>
+
+
+    <main>
+        <section class="welcome-section">
+            <h1>Welcome to PDF Automation</h1>
+        </section>
+
+        <div class="projects-grid">
+            <a href="TGH_Invoice_Rename.html" target="_blank" class="card-link">
+                <div class="project-card">
+                    <div class="icon-circle" style="background-color: #3b82f6;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6" />
+                        </svg>
+                    </div>
+                    <h3>Invoice Renamer</h3>
+                </div>
+            </a>
+
+            <a href="Label_renamer.html" target="_blank" class="card-link">
+                <div class="project-card">
+                    <div class="icon-circle" style="background-color: #10b981;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v4a1 1 0 001 1h3v4l5-5-5-5v4H4a1 1 0 00-1 1z" />
+                        </svg>
+                    </div>
+                    <h3>Label Renamer</h3>
+                </div>
+            </a>
+
+            <a href="TGH_PDF Merger.html" target="_blank" class="card-link">
+                <div class="project-card">
+                    <div class="icon-circle" style="background-color: #f59e0b;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <h3>PDF Merger</h3>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        function toggleTheme() {
+            const root = document.documentElement;
+            const iconPath = document.getElementById('theme-path');
+            const current = root.getAttribute('data-theme');
+            const isDark = current === 'dark';
+
+            root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+
+            // Swap icons (sun/moon)
+            iconPath.setAttribute("d", isDark
+                ? "M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.7.7M21 12h-1M4 12H3m2.34-6.66l-.7-.7M19.95 19.95l-.7-.7M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                : "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z");
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Merger</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+  <style>
+    :root {
+      --color-bg-light: #f6f9fc;
+      --color-bg-dark: #0d1117;
+      --color-text-light: #333;
+      --color-text-dark: #f0f0f0;
+      --color-primary: #4a148c;
+    }
+
+    [data-theme="dark"] {
+      --color-bg-light: #0d1117;
+      --color-text-light: #f0f0f0;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--color-bg-light);
+      color: var(--color-text-light);
+      transition: all 0.3s ease;
+    }
+
+    header {
+      height: 70px;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    .back-btn {
+      color: var(--color-primary);
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 1rem;
+      margin-right: 1rem;
+    }
+
+    .header-center {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0 auto;
+      transform: translateX(-1.5rem);
+    }
+
+    .logo-img {
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .logo-text {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+
+    .toggle-theme {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(145deg, #e0e0e0, #ffffff);
+      border: none;
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+      color: var(--color-primary);
+      transition: all 0.3s ease;
+    }
+
+    .toggle-theme:hover {
+      background: #4a148c;
+      color: #fff;
+    }
+
+    .toggle-theme svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - 70px);
+      padding: 1rem;
+    }
+
+    .container {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .container h2 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      color: var(--color-primary);
+    }
+
+    input[type="file"] {
+      margin: 20px 0;
+      width: 100%;
+    }
+
+    button {
+      background: #4a148c;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover:not(:disabled) {
+      background: #37085f;
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .error {
+      color: red;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 20px;
+      }
+
+      .container h2 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header>
+    <a href="PDF_Automator.html" class="back-btn">← Back</a>
+
+    <div class="header-center">
+      <img src="thegoodhealth.png" alt="Logo" class="logo-img" />
+      <span class="logo-text">PDF Automation</span>
+    </div>
+
+    <button class="toggle-theme" onclick="toggleTheme()">
+      <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path id="theme-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.7.7M21 12h-1M4 12H3m2.34-6.66l-.7-.7M19.95 19.95l-.7-.7M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    </button>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="container">
+      <h2>Merge PDFs into One</h2>
+      <input type="file" id="pdfInput" multiple accept="application/pdf">
+      <button id="mergeButton" onclick="mergePDFs()">Merge and Download</button>
+      <div id="status"></div>
+    </div>
+  </main>
+
+  <!-- JavaScript: Original Code Preserved -->
+  <script>
+    async function mergePDFs() {
+      const input = document.getElementById('pdfInput');
+      const button = document.getElementById('mergeButton');
+      const status = document.getElementById('status');
+
+      if (!input.files || input.files.length === 0) {
+        status.innerHTML = '<span class="error">Please select PDF files to merge</span>';
+        return;
+      }
+      if (input.files.length < 2) {
+        status.innerHTML = '<span class="error">Please select at least two PDF files</span>';
+        return;
+      }
+
+      button.disabled = true;
+      status.textContent = 'Merging PDFs... Please wait';
+
+      try {
+        const pdfDoc = await PDFLib.PDFDocument.create();
+        let processedFiles = 0;
+
+        for (let file of input.files) {
+          try {
+            const arrayBuffer = await file.arrayBuffer();
+            const loadedPdf = await PDFLib.PDFDocument.load(arrayBuffer);
+            const copiedPages = await pdfDoc.copyPages(loadedPdf, loadedPdf.getPageIndices());
+            copiedPages.forEach(page => pdfDoc.addPage(page));
+            processedFiles++;
+            status.textContent = `Merging PDFs... (${processedFiles}/${input.files.length})`;
+          } catch (fileError) {
+            console.error(`Error processing file ${file.name}:`, fileError);
+            status.innerHTML = `<span class="error">Error processing ${file.name}: ${fileError.message}</span>`;
+            button.disabled = false;
+            return;
+          }
+        }
+
+        status.textContent = 'Saving merged PDF...';
+        let mergedPdfBytes;
+        try {
+          mergedPdfBytes = await pdfDoc.save();
+        } catch (saveError) {
+          throw new Error('Failed to save merged PDF: ' + saveError.message);
+        }
+
+        status.textContent = 'Preparing download...';
+        try {
+          const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `merged_${new Date().toISOString().slice(0, 10)}.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(link.href);
+          status.textContent = 'Merge completed successfully! File is downloading.';
+        } catch (downloadError) {
+          throw new Error('Failed to initiate download: ' + downloadError.message);
+        }
+
+      } catch (error) {
+        console.error('Merge error:', error);
+        status.innerHTML = '<span class="error">Error: ' + error.message + '</span>';
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    document.getElementById('pdfInput').addEventListener('change', () => {
+      document.getElementById('status').textContent = '';
+    });
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const iconPath = document.getElementById('theme-path');
+      const isDark = root.getAttribute('data-theme') === 'dark';
+
+      root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      iconPath.setAttribute("d", isDark
+        ? "M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.7.7M21 12h-1M4 12H3m2.34-6.66l-.7-.7M19.95 19.95l-.7-.7M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+        : "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z");
+    }
+  </script>
+</body>
+
+</html>
